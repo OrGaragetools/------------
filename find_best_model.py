@@ -88,8 +88,8 @@ def calc_my_mape(df):
     )  # Вычисление MAPE для ненулевых реальных продаж.
 
     df["1 - my_MAPE"] = 1 - df["my_MAPE"]  # Вычисление 1 - MAPE.
-    df[">= 70%"] = 0  # Создание столбца ">= 70%" и заполнение его нулями.
-    df.loc[df["1 - my_MAPE"] >= 0.7, ">= 70%"] = 1  # Установка значения 1, если 1 - MAPE >= 0.7.
+    df[">= 90%"] = 0  # Создание столбца ">= 90%" и заполнение его нулями.
+    df.loc[df["1 - my_MAPE"] >= 0.9, ">= 90%"] = 1  # Установка значения 1, если 1 - MAPE >= 0.7.
 
     return df  # Возврат DataFrame с добавленными столбцами.
 
@@ -157,7 +157,7 @@ if __name__ == "__main__":
     best_model_for_department = calc_my_mape(best_model_for_department)
     print(best_model_for_department)
 
-    print(best_model_for_department[">= 70%"].value_counts())
+    print(best_model_for_department[">= 90%"].value_counts())
 
     # Сохраняем лучший метод с метриками для каждого отдела
     best_model_for_department.to_excel(BEST_MODEL_FOR_DEPARTMENTS_PATH, index=False)
@@ -200,8 +200,8 @@ if __name__ == "__main__":
     best_model_for_department = calc_my_mape(best_model_for_department)
     print(best_model_for_department)
 
-    # Печатаем количество отделов с MAPE >= 70%
-    print(best_model_for_department[">= 70%"].value_counts())
+    # Печатаем количество отделов с MAPE >= 90%
+    print(best_model_for_department[">= 90%"].value_counts())
 
     # Сохраняем лучший метод с метриками для каждого отдела в CSV-файл
     best_model_for_department.to_excel(BEST_MODEL_FOR_DEPARTMENTS_PATH, index=False)
