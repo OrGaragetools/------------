@@ -48,6 +48,8 @@ def calc_best_method_for_department(department, df, past_preds_names, past_preds
         # Цикл по прошлым прогнозам для текущего отдела.
         for pred_df in past_preds_dfs:
             y_pred = list(pred_df.loc[pred_df["Отдел"] == department].values[0][1:])  # Получение прогнозов для текущего отдела.
+            if any(pred < 0 for pred in y_pred):  # Пропускаем модели с отрицательными прогнозами
+                continue
             cur_preds.append(y_pred)  # Добавление прогнозов в список.
             cur_preds_sum.append(sum(y_pred))  # Вычисление суммарных прогнозов для текущего отдела.
             custom_metric.append(abs(true_sum - sum(y_pred)))  # Вычисление индивидуальной метрики.
@@ -113,22 +115,11 @@ def get_future_preds_for_best_model(best_model_for_department, future_preds_dfs,
 
         future_preds.append([department] + future_pred + [model])  # Добавление прогнозов в список.
 
-    # Дополнительно обрабатываем товары, для которых нет прогнозов от выбранных моделей.
-    for department in department_only_future:
-        model = "RegressionCatboost"  # Задаем модель по умолчанию.
-        cur_df = future_preds_dfs[model]  # Получаем DataFrame с прогнозами для модели по умолчанию.
-        try:
-            future_pred = list(cur_df.loc[cur_df["Отдел"] == department].values[0][1:])  # Получаем прогнозы для текущего товара.
-        except Exception as e:
-            print(f"Для отдела {department} нет прогноза с RegressionCatboost")  # Выводим сообщение об отсутствии прогноза.
-            continue
-
-        future_preds.append([department] + future_pred + [model])  # Добавляем прогнозы в список.
 
     # Создаем DataFrame с будущими прогнозами.
     return pd.DataFrame(
         future_preds,
-        columns=["Отдел"]  # Столбец с идентификаторами товаров.
+        columns=["Отдел"]  # Столбец с идентификаторами отдела.
         + list(future_preds_dfs[list(future_preds_dfs.keys())[0]].columns[1:])  # Столбцы с прогнозами.
         + ["ModelType"],  # Столбец с именами моделей.
     )
